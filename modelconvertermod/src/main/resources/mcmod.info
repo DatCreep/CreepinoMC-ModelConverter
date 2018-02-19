@@ -1,0 +1,16 @@
+[
+{
+  "modid": "modelz",
+  "name": "Modelz",
+  "description": "a model converter made by Creepinson",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Creepinson"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
