@@ -7,15 +7,19 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
+
+import org.apache.commons.io.FileUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 import me.creepinson.modelz.Modelz;
+import me.creepinson.modelz.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BlockPart;
 import net.minecraft.client.renderer.block.model.BlockPartFace;
@@ -47,7 +51,7 @@ public class Converters {
 			return jsonModel;
 		}
 
-		public File convert(String exportedFileName, int texWidth, int texHeight) {
+		public File convert(String exportedFileName, String author, String packageName, String modelName, int texWidth, int texHeight) {
 			File javaFile = null;
 			if (this.jsonModel != null && this.jsonModel.exists()) {
 				/*
@@ -88,41 +92,29 @@ public class Converters {
 					BufferedImage image = null;
 					try {
 
-						int ii = 0;
-						for (BlockPart p1 : newModel.getElements()) {
-							for (Map.Entry<EnumFacing, BlockPartFace> p1f : p1.mapFaces.entrySet()) {
-								if (ii == 1) {
-									image = ImageIO.read(Minecraft.getMinecraft().getResourceManager()
-											.getResource(
-													new ResourceLocation(newModel.textures.get(p1f.getValue().texture)))
-											.getInputStream());
-									System.out.println(Minecraft.getMinecraft().getResourceManager().getResource(
-											new ResourceLocation(newModel.textures.get(p1f.getValue().texture))));
-									break;
-								}
+						boolean bool = false;
 
-								ii++;
+						for (String key : newModel.textures.keySet()) {
+							if (!bool) {
+								image = ImageIO.read(Minecraft.getMinecraft().getResourceManager()
+										.getResource(new ResourceLocation(newModel.textures.get(key)))
+										.getInputStream());
+								System.out.println(Minecraft.getMinecraft().getResourceManager()
+										.getResource(new ResourceLocation(newModel.textures.get(key))));
+								bool = true;
 							}
 						}
+						int b = 0;
+					
 						JavaModel temp = new JavaModel(image.getHeight(), image.getWidth());
 						for (BlockPart bp : newModel.getElements()) {
-							JavaModelRenderer tempRenderer = new JavaModelRenderer(temp);
+							JavaModelRenderer tempRenderer = new JavaModelRenderer(temp, "box" + Integer.toString(b++));
+							tempRenderer.from = bp.positionFrom;
+							tempRenderer.to = bp.positionTo;
 							temp.boxList.add(tempRenderer);
 						}
 
-						FileOutputStream f = new FileOutputStream(javaFile);
-						ObjectOutputStream o;
-						try {
-							o = new ObjectOutputStream(f);
-
-							o.writeObject(temp);
-
-							o.close();
-							f.close();
-						} catch (IOException e) {
-							Modelz.getLogger().error("Error converting Json!");
-							e.printStackTrace();
-						}
+						FileUtils.writeStringToFile(javaFile, Utils.ConverterUtils.sendJavaModelToJavaFile(temp, modelName, author, packageName).toString(), Charset.forName("UTF-8"));
 
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
@@ -138,7 +130,11 @@ public class Converters {
 			}
 
 			return javaFile;
+
 		}
 
+		
+
 	}
+
 }

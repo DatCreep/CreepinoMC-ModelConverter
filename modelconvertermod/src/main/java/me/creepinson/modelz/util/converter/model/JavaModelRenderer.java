@@ -1,10 +1,12 @@
 package me.creepinson.modelz.util.converter.model;
 
+import java.io.Serializable;
 import java.util.List;
+
+import org.lwjgl.util.vector.Vector3f;
 
 import com.google.common.collect.Lists;
 
-import me.creepinson.modelz.util.converter.model.ModelBox;
 import net.minecraft.client.model.TextureOffset;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GLAllocation;
@@ -13,7 +15,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class JavaModelRenderer
+public class JavaModelRenderer implements Serializable
 {
     /** The size of the texture file's width in pixels. */
     public float textureWidth;
@@ -38,11 +40,14 @@ public class JavaModelRenderer
     public boolean isHidden;
     public List<ModelBox> cubeList;
     public List<JavaModelRenderer> childModels;
-    public final String boxName;
+    public String boxName;
     private final JavaModel baseModel;
     public float offsetX;
     public float offsetY;
     public float offsetZ;
+	public Vector3f from;
+	public Vector3f to;
+	
 
     public JavaModelRenderer(JavaModel model, String boxNameIn)
     {
