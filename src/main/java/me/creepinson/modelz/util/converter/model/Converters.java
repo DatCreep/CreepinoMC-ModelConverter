@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.Map;
+import java.io.UnsupportedEncodingException;
 
 import javax.imageio.ImageIO;
 
@@ -17,10 +17,9 @@ import com.google.gson.JsonSyntaxException;
 
 import me.creepinson.modelz.Modelz;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.block.model.BlockPart;
-import net.minecraft.client.renderer.block.model.BlockPartFace;
 import net.minecraft.client.renderer.block.model.ModelBlock;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 
 public class Converters {
@@ -85,31 +84,16 @@ public class Converters {
 						e1.printStackTrace();
 					}
 					ModelBlock newModel = ModelBlock.deserialize(new FileReader(this.jsonModel));
-					BufferedImage image = null;
 					try {
+						BufferedImage image = ImageIO.read(Minecraft.getMinecraft().getResourceManager()
+								.getResource(new ResourceLocation(newModel.textures.get(0))).getInputStream());
 
-						int ii = 0;
-						for (BlockPart p1 : newModel.getElements()) {
-							for (Map.Entry<EnumFacing, BlockPartFace> p1f : p1.mapFaces.entrySet()) {
-								if (ii == 1) {
-									image = ImageIO.read(Minecraft.getMinecraft().getResourceManager()
-											.getResource(
-													new ResourceLocation(newModel.textures.get(p1f.getValue().texture)))
-											.getInputStream());
-									System.out.println(Minecraft.getMinecraft().getResourceManager().getResource(
-											new ResourceLocation(newModel.textures.get(p1f.getValue().texture))));
-									break;
-								}
-
-								ii++;
-							}
-						}
 						JavaModel temp = new JavaModel(image.getHeight(), image.getWidth());
 						for (BlockPart bp : newModel.getElements()) {
 							JavaModelRenderer tempRenderer = new JavaModelRenderer(temp);
 							temp.boxList.add(tempRenderer);
 						}
-
+						
 						FileOutputStream f = new FileOutputStream(javaFile);
 						ObjectOutputStream o;
 						try {
@@ -124,6 +108,9 @@ public class Converters {
 							e.printStackTrace();
 						}
 
+					} catch (UnsupportedEncodingException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();

@@ -13,7 +13,6 @@ import java.nio.file.Paths;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.lwjgl.input.Keyboard;
 
-import me.creepinson.modelz.Modelz;
 import me.creepinson.modelz.util.converter.model.Converters.JSONToJava;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiMainMenu;
@@ -65,8 +64,7 @@ public class GuiModelz extends GuiScreen {
 				URI thingy = null;
 				try {
 					thingy = new URI(thePath);
-				Modelz.getLogger().info(thingy.getAuthority() + thingy.getPath());
-				File f = new File(thingy.getAuthority() + thingy.getPath());
+				File f = new File(filePath.getText());
 				URI u = f.toURI();
 				if (f != null && f.exists()) {
 					JSONToJava jsonToJava = new JSONToJava(f);
